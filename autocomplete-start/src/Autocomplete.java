@@ -343,15 +343,24 @@ public class Autocomplete {
          */
         private void add(String word, double weight) {
             // TODO: Implement add
-            Node curr = myRoot;
+            Node curr = this.myRoot;
             for (int i = 0; i < word.length(); i++) {
                 Character currentCharacter = word.charAt(i);
                 if (!curr.children.containsKey(Character.toLowerCase(currentCharacter))) {
-                    curr.children.put(currentCharacter, new Node(Character.toLowerCase(currentCharacter), curr, weight));
+                    curr.children.put(currentCharacter,
+                                      new Node(Character.toLowerCase(currentCharacter),
+                                      curr,
+                                      weight));
+                    curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
                 }
-                curr = curr.children.get(word.charAt(i));
+                else {
+                    curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
+                }
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
             }
-            curr.isWord = true;
+                curr.isWord = true;
+                curr.myWord = word;
+                curr.myWeight = weight;
         }
 
         /**
@@ -420,6 +429,13 @@ public class Autocomplete {
             return null;
         }
         
+        /**
+        * Return the largest from a pair of weights
+        *
+        * @param d1 - the first weight in the comparison
+        * @param d2 - the second weight in the comparison
+        * @return the larger of the two weights
+        */
         private double maxWeight(double d1, double d2) {
             if (d1 > d2)
                 return d1;
@@ -427,16 +443,134 @@ public class Autocomplete {
             return d2;
         }
         
+        /**
+        * Determine if word is in the Trie
+        *
+        * @param word - a word to be determined its presence in the Trie
+        * @return true/false if the word is in the Trie or not
+        */
         public boolean contains(String word) {
             Node curr = myRoot;
             for (int i = 0; i < word.length(); i++) {
                 Character currentCharacter = word.charAt(i);
-                if (!curr.children.containsKey(currentCharacter)) {
+                if (!curr.children.containsKey(Character.toLowerCase(currentCharacter))) {
                     return false;
                 }
-                curr = curr.children.get(currentCharacter);
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
             }
             return curr.isWord;
+        }
+        
+        /**
+        * Return mySubtreeMaxWeight at each node along a branch corresponding
+        *     to a particular node
+        *
+        * @param word - the word whose branch we will traverse
+        * @return result (ArrayList<Double>) - a list of mySubtreeMaxWeights
+        */
+        public ArrayList<Double> returnMaxWeights(String word) {
+            ArrayList<Double> result = new ArrayList<>();
+            
+            // If Trie doesn't contain word, return empty ArrayList
+            if (!this.contains(word))
+                return result;
+            Node curr = this.myRoot;
+            
+            // Add contents from the root
+            result.add(curr.mySubtreeMaxWeight); 
+            
+            // For each character in word, add the contents of myWeights
+            for (int i = 0; i < word.length(); i++) {
+                Character currentCharacter = word.charAt(i);
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                result.add(curr.mySubtreeMaxWeight);
+            }
+            return result;
+        }
+        
+        /**
+        * Return myWeight at each node along a branch corresponding
+        *     to a particular node
+        *
+        * @param word - the word whose branch we will traverse
+        * @return result (ArrayList<Double>) - a list of the myWeights
+        */
+        public ArrayList<Double> returnWeights(String word) {
+            ArrayList<Double> result = new ArrayList<>();
+            
+            // if Trie doesn't contain word, return empty ArrayList
+            if (!this.contains(word))
+                return result;
+            Node curr = this.myRoot;
+            
+            // Add contents from the root
+            result.add(curr.myWeight); 
+            
+            // For each character in word, add the contents of myWeights
+            for (int i = 0; i < word.length(); i++) {
+                Character currentCharacter = word.charAt(i);
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                result.add(curr.myWeight);
+            }
+            return result;
+        }
+        
+        /**
+        * Return myInfo at each node along a branch corresponding
+        *     to a particular node
+        *
+        * @param word - the word whose branch we will traverse
+        * @return result (ArrayList<String>) - a list of myInfos
+        */
+        public ArrayList<String> returnMyInfo(String word) {
+            ArrayList<String> result = new ArrayList<>();
+            
+            // If Trie doesn't contain word, return empty ArrayList
+            if (!this.contains(word))
+                return result;
+            Node curr = this.myRoot;
+            
+            // Add contents from the root
+            result.add(curr.myInfo); 
+            
+            // For each character in word, add the contents of myInfo
+            for (int i = 0; i < word.length(); i++) {
+                Character currentCharacter = word.charAt(i);
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                result.add(curr.myInfo);
+            }
+            return result;
+        }
+        
+        /**
+        * Return myWords at each node alonga branch corresponding
+        *     to a particular node
+        *
+        * @param word - the word whose branch we will traverse
+        * @return result (ArrayList<String>) - a list of myWords
+        */
+        public ArrayList<String> returnMyWord(String word) {
+            ArrayList<String> result = new ArrayList<>();
+            
+            // if Trie doesn't contain word, return empty ArrayList
+            if (!this.contains(word))
+                return result;
+                
+            Node curr = this.myRoot;
+            
+            // the root is not a word, add empty string
+            result.add("");
+            for (int i = 0; i < word.length(); i++) {
+                Character currentCharacter = word.charAt(i);
+                curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                
+                // if the current node is a word, add myWord to result
+                if (curr.isWord)
+                    result.add(curr.myWord);
+                else
+                    result.add(""); // otherwise add the empty string
+            }
+            return result;
         }
     }
 }
