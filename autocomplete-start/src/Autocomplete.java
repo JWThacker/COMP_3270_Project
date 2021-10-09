@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.PriorityQueue;
+import java.util.Iterator;
+import java.util.Collection;
 
 public class Autocomplete {
         /**
@@ -344,23 +346,28 @@ public class Autocomplete {
         private void add(String word, double weight) {
             // TODO: Implement add
             Node curr = this.myRoot;
-            for (int i = 0; i < word.length(); i++) {
-                Character currentCharacter = word.charAt(i);
-                if (!curr.children.containsKey(Character.toLowerCase(currentCharacter))) {
-                    curr.children.put(currentCharacter,
-                                      new Node(Character.toLowerCase(currentCharacter),
-                                      curr,
-                                      weight));
-                    curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
+            if (!this.contains(word)) {
+                for (int i = 0; i < word.length(); i++) {
+                    Character currentCharacter = word.charAt(i);
+                    if (!curr.children.containsKey(Character.toLowerCase(currentCharacter))) {
+                        curr.children.put(currentCharacter,
+                                          new Node(Character.toLowerCase(currentCharacter),
+                                          curr,
+                                          weight));
+                        curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
+                    }
+                    else {
+                        curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
+                    }
+                    curr = curr.children.get(Character.toLowerCase(currentCharacter));
                 }
-                else {
-                    curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
-                }
-                curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                    curr.isWord = true;
+                    curr.myWord = word;
+                    curr.myWeight = weight;
             }
-                curr.isWord = true;
-                curr.myWord = word;
-                curr.myWeight = weight;
+            else {
+                System.out.println(word + " already exists");
+            }
         }
 
         /**
@@ -441,6 +448,19 @@ public class Autocomplete {
                 return d1;
                 
             return d2;
+        }
+        
+        public Node maxNode(Collection<Node> nodes) {
+            Iterator<Node> itr = nodes.iterator();
+            Node max = itr.next();
+            Node currentNode = null;
+            while (itr.hasNext()) {
+                currentNode = itr.next();
+                if (currentNode.compareTo(max) > 0) {
+                    max = currentNode;
+                }
+            }
+            return max;
         }
         
         /**
