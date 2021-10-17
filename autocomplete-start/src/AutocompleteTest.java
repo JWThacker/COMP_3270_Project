@@ -2,73 +2,543 @@ import org.junit.Assert;
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class AutocompleteTest {
-
-   /** A test that always fails. **/
-   @Test public void defaultTest() {
-       String[] myStrings = {"word", "words", "ape"};
-       String[] myTestStrings = {"word", "words", "apple", "WORD", "worD", "ape"};
-       double[] myWeights = {100.0, 50.0, 75.0};
-       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
-       for (String string : myTestStrings) {
-           if (string.equals("apple")) {
-               Assert.assertFalse(myTrie.contains(string));
-               continue;
-           }
-           Assert.assertTrue(myTrie.contains(string));
-       }
-       ArrayList<Double> maxWeights = new ArrayList<>();
-       maxWeights = myTrie.returnMaxWeights("word");
-       for (int i = 0; i < maxWeights.size(); i++) {
-           System.out.println(maxWeights.get(i));
-       }
-   }
-   
    
    @Test public void testProblemStatementExample() {
-       String[] myStrings = {"all", "bat", "apes" , "ape", "bay", "all"};
-       //String[] myTestStrings = {"word", "words", "apple", "WORD", "worD", "ape"};
-       double[] myWeights = {3, 2, 5, 1, 4, 5};
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay"};
+       double[] myWeights = {3, 2, 5, 1, 4};
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
-       ArrayList<Double> maxWeights = new ArrayList<>();
-       ArrayList<Double> myReturnedWeights = new ArrayList<>();
-       ArrayList<String> myInfo = new ArrayList<>();
-       ArrayList<String> myWords = new ArrayList<>();
-       String wordToTest = "bay";
-       maxWeights = myTrie.returnMaxWeights(wordToTest);
-       myReturnedWeights = myTrie.returnWeights(wordToTest);
-       myInfo = myTrie.returnMyInfo(wordToTest);
-       myWords = myTrie.returnMyWord(wordToTest);
-       for (int i = 0; i < maxWeights.size(); i++) {
-           System.out.println(maxWeights.get(i) + " " + myReturnedWeights.get(i)
-                              + " " + myInfo.get(i) + " "
-                              + myWords.get(i));
+       
+       ArrayList<Double> actualMaxWeights = new ArrayList<>();
+       ArrayList<Double> actualReturnedWeights = new ArrayList<>();
+       ArrayList<String> actualMyInfo = new ArrayList<>();
+       ArrayList<String> actualMyWords = new ArrayList<>();
+       
+       ArrayList<Double> expectedMaxWeights = new ArrayList<>();
+       ArrayList<Double> expectedReturnedWeights = new ArrayList<>();
+       ArrayList<String> expectedMyInfo = new ArrayList<>();
+       ArrayList<String> expectedMyWords = new ArrayList<>();
+       
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(3.0);
+       expectedMaxWeights.add(3.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(3.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("l");
+       expectedMyInfo.add("l");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("all");
+       
+       String wordToTest = "all";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
        }
        
-       System.out.println(myTrie.contains("all"));
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+      
+       wordToTest = "ape";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(1.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("p");
+       expectedMyInfo.add("e");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("ape");
+      
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+     
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "ape";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(5.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(1.0);
+       expectedReturnedWeights.add(5.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("p");
+       expectedMyInfo.add("e");
+       expectedMyInfo.add("s");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("ape");
+       expectedMyWords.add("apes");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+       
+       
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "bat";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(2.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(2.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("b");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("t");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("bat");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+       
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "bay";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(5.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(4.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("b");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("y");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("bay");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+       
    }
    
-   @Test
-   public void testMaxNode() {
-       HashMap<Character, Node> myChild = new HashMap<Character, Node>();
-       myChild.put('a', new Node('a', null, 5));
-       myChild.get('a').myWeight = 9;
-       myChild.put('b', new Node('b', null, 6));
-       myChild.get('b').myWeight = 6;
-       myChild.put('c', new Node('c', null, 7));
-       myChild.get('c').myWeight = 7;
-       myChild.put('d', new Node('d', null, 8));
-       myChild.get('d').myWeight = 8;
-       myChild.put('e', new Node('e', null, 9));
-       myChild.get('e').myWeight = 9;
-       
-       String[] myStrings = {"all", "bat", "apes" , "ape", "bay", "all"};
-       double[] myWeights = {3, 2, 5, 1, 4, 5};
+   @Test public void testProblemStatementExampleAddSameWordAgain() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay", "apes"};
+       double[] myWeights = {3, 2, 5, 1, 4, 1};
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
-       Node myMaxNode = myTrie.maxNode(myChild.values());
-       System.out.println(myMaxNode.toString());
+       ArrayList<Double> actualMaxWeights = new ArrayList<>();
+       ArrayList<Double> actualReturnedWeights = new ArrayList<>();
+       ArrayList<String> actualMyInfo = new ArrayList<>();
+       ArrayList<String> actualMyWords = new ArrayList<>();
+       
+       ArrayList<Double> expectedMaxWeights = new ArrayList<>();
+       ArrayList<Double> expectedReturnedWeights = new ArrayList<>();
+       ArrayList<String> expectedMyInfo = new ArrayList<>();
+       ArrayList<String> expectedMyWords = new ArrayList<>();
+       
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(3.0);
+       expectedMaxWeights.add(3.0);
+       expectedMaxWeights.add(3.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(3.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("l");
+       expectedMyInfo.add("l");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("all");
+       
+       String wordToTest = "all";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+       
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+      
+       wordToTest = "ape";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(3.0);
+       expectedMaxWeights.add(1.0);
+       expectedMaxWeights.add(1.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(1.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("p");
+       expectedMyInfo.add("e");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("ape");
+      
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+     
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "apes";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(3.0);
+       expectedMaxWeights.add(1.0);
+       expectedMaxWeights.add(1.0);
+       expectedMaxWeights.add(1.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(1.0);
+       expectedReturnedWeights.add(1.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("p");
+       expectedMyInfo.add("e");
+       expectedMyInfo.add("s");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("ape");
+       expectedMyWords.add("apes");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
        
        
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "bat";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(2.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(2.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("b");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("t");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("bat");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+       
+       actualMaxWeights.clear();
+       actualReturnedWeights.clear();
+       actualMyInfo.clear();
+       actualMyWords.clear();
+      
+       expectedMaxWeights.clear();
+       expectedReturnedWeights.clear();
+       expectedMyInfo.clear();
+       expectedMyWords.clear();
+       
+       wordToTest = "bay";
+       actualMaxWeights = myTrie.returnMaxWeights(wordToTest);
+       actualReturnedWeights = myTrie.returnWeights(wordToTest);
+       actualMyInfo = myTrie.returnMyInfo(wordToTest);
+       actualMyWords = myTrie.returnMyWord(wordToTest);
+       
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       expectedMaxWeights.add(4.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(4.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("b");
+       expectedMyInfo.add("a");
+       expectedMyInfo.add("y");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("");
+       expectedMyWords.add("bay");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+              
    }
+
+    @Test
+    public void testAddAllSame() {
+       String[] myStrings = {"a", "a", "a" , "a", "a", "a"};
+       double[] myWeights = {3, 2, 5, 1, 4, 1};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+       
+       ArrayList<Double> actualMaxWeights = new ArrayList<>();
+       ArrayList<Double> actualReturnedWeights = new ArrayList<>();
+       ArrayList<String> actualMyInfo = new ArrayList<>();
+       ArrayList<String> actualMyWords = new ArrayList<>();
+       
+       ArrayList<Double> expectedMaxWeights = new ArrayList<>();
+       ArrayList<Double> expectedReturnedWeights = new ArrayList<>();
+       ArrayList<String> expectedMyInfo = new ArrayList<>();
+       ArrayList<String> expectedMyWords = new ArrayList<>();
+       
+       expectedMaxWeights.add(1.0);
+       expectedMaxWeights.add(1.0);
+       
+       expectedReturnedWeights.add(-1.0);
+       expectedReturnedWeights.add(1.0);
+       
+       expectedMyInfo.add("-");
+       expectedMyInfo.add("a");
+       
+       expectedMyWords.add("");
+       expectedMyWords.add("a");
+       
+       for (int i = 0; i < actualMaxWeights.size(); i++) {
+           Assert.assertEquals(expectedMaxWeights.get(i), actualMaxWeights.get(i));
+           Assert.assertEquals(expectedReturnedWeights.get(i), actualReturnedWeights.get(i));
+           Assert.assertEquals(expectedMyInfo.get(i), actualMyInfo.get(i));
+           Assert.assertEquals(expectedMyWords.get(i), actualMyWords.get(i));
+       }
+    }
+    
+    @Test (expected=IllegalArgumentException.class)
+    public void testNegativeWeight() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay", "apes"};
+       double[] myWeights = {3, 2, 5, 1, 4, -1};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+    }
+    
+    @Test (expected=NullPointerException.class)
+    public void testNullString() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", null, "apes"};
+       double[] myWeights = {3, 2, 5, 1, 4, 1};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+    }
+    
+    
+    @Test
+    public void testTopMatchProblemStatementExample() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay"};
+       double[] myWeights = {3, 2, 5, 1, 4};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+       
+       String topMatch = myTrie.topMatch("a");
+       //System.out.println(topMatch);
+    }
+    
+    @Test
+    public void testTraverseDownToNode() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay"};
+       double[] myWeights = {3, 2, 5, 1, 4};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+       
+       Node currentNode = myTrie.traverseDownToWord("ape");
+       //System.out.println(currentNode.toString());
+    }
+    
+    @Test
+    public void testTopMatchesTypical() {
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay"};
+       double[] myWeights = {3, 2, 5, 1, 4};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+       
+       Iterable<String> topMatches = myTrie.topMatches("a", 2);
+       for (String element : topMatches) {
+           System.out.println(element);
+       }
+    }
+
 }

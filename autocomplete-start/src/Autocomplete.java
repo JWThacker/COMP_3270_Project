@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.TreeSet;
+import java.util.NavigableSet;
 
 public class Autocomplete {
         /**
@@ -345,6 +347,13 @@ public class Autocomplete {
          */
         private void add(String word, double weight) {
             // TODO: Implement add
+            
+            if (word == null)
+                throw new NullPointerException("Word cannot be null");
+            
+            if (weight < 0)
+                throw new IllegalArgumentException("Negative weight "+ weight);
+                
             Node curr = this.myRoot;
             if (!this.contains(word)) {
                 for (int i = 0; i < word.length(); i++) {
@@ -354,7 +363,7 @@ public class Autocomplete {
                                           new Node(Character.toLowerCase(currentCharacter),
                                           curr,
                                           weight));
-                        curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
+                        curr.mySubtreeMaxWeight = weight;
                     }
                     else {
                         curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
@@ -366,7 +375,30 @@ public class Autocomplete {
                     curr.myWeight = weight;
             }
             else {
-                System.out.println(word + " already exists");
+                for (int i = 0; i < word.length(); i++) {
+                    Character currentCharacter = word.charAt(i);
+                    curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                }
+                
+                curr.myWeight = weight;
+                Collection<Node> nodes = curr.children.values();
+                Node max = null;
+                int nodeSize = nodes.size();
+                String myWord = word;
+                if (nodes.size() > 0) {
+                   max = maxNode(nodes);
+                   curr.mySubtreeMaxWeight = maxWeight(curr.myWeight, max.mySubtreeMaxWeight);
+                }
+                else
+                    curr.mySubtreeMaxWeight = curr.myWeight;
+                
+                Node parentNode = curr.parent;    
+                do {
+                    nodes = parentNode.children.values();
+                    max = maxNode(nodes);
+                    parentNode.mySubtreeMaxWeight = maxWeight(max.mySubtreeMaxWeight, parentNode.myWeight);
+                    parentNode = parentNode.parent;
+                } while (parentNode != null);
             }
         }
 
@@ -392,7 +424,52 @@ public class Autocomplete {
          */
         public Iterable<String> topMatches(String prefix, int k) {
             // TODO: Implement topKMatches
-            return null;
+            if (prefix == null)
+                throw new NullPointerException();
+                
+            if (k < 0)
+                throw new IllegalArgumentException();
+                
+            // Traverse down to the prefix node
+            Node curr = this.traverseDownToWord(prefix);
+            Node nodeToAdd = null;
+            
+            // Declaration of all collections to be used
+            PriorityQueue<Node> wordQueue = new PriorityQueue<>(k, new Node.ReverseSubtreeMaxWeightComparator());
+            TreeSet<Node> bagOfWords = new TreeSet<>(); // Holds words in each highly weighted branch
+            ArrayList<String> results = new ArrayList<>(); // Holds final list of strings
+                        
+            // Initialize collections/reference variables/Counting variables
+            wordQueue.addAll(curr.children.values());
+            Node poppedNode = wordQueue.poll();
+            Node maxInWordQueue = wordQueue.peek();
+            Node compNode = new Node('a', null, 0);
+            int sizeOfBag = 0;
+            
+            /* While the popped node is not null and the number of words with weigthts
+            *      greater than the max subtree weight of the largest node in the queue,
+            *      add words to the bag
+            */
+            while ((poppedNode != null) && (sizeOfBag < k)) {
+                wordQueue.addAll(poppedNode.children.values());
+                if (poppedNode.isWord) 
+                    bagOfWords.add(poppedNode);
+                if (wordQueue.isEmpty())
+                    break;
+                maxInWordQueue = wordQueue.peek();
+                compNode.setWeight(maxInWordQueue.mySubtreeMaxWeight);
+                sizeOfBag = bagOfWords.tailSet(compNode, false).size();
+                poppedNode = wordQueue.poll();   
+            }
+            
+            Iterator<Node> itr = bagOfWords.descendingIterator();
+            while (itr.hasNext()) {
+                results.add(itr.next().myWord);
+                if (results.size() >= k)
+                    break;
+            }
+                        
+            return results;
         }
 
         /**
@@ -408,7 +485,42 @@ public class Autocomplete {
          */
         public String topMatch(String prefix) {
             // TODO: Implement topMatch
-            return null;
+            if (prefix == null) {
+                throw new NullPointerException("Prefix cannot be null");
+            }
+            
+            Character currentCharacter = null;
+            Node curr = this.myRoot;
+            for (int i = 0; i < prefix.length(); i++) {
+                currentCharacter = Character.toLowerCase(prefix.charAt(i));
+                curr = curr.children.get(currentCharacter);
+            }
+            
+            Comparator<Node> reverseWeightComp = new Node.ReverseSubtreeMaxWeightComparator();
+            ArrayList<Node> myNodes = new ArrayList<>();
+            PriorityQueue<Node> myNOdes = new PriorityQueue<>(reverseWeightComp);
+            
+            while (curr.mySubtreeMaxWeight != curr.getWeight()) {
+                myNOdes.addAll(curr.children.values());
+                curr = myNOdes.remove();
+            }
+            
+            /*
+            while (curr.mySubtreeMaxWeight != curr.getWeight()) {
+                myNodes.addAll(0, curr.children.values());
+                myNodes.sort(reverseWeightComp);
+                curr = myNodes.get(0);
+            }
+            */
+            
+            /*
+            while (curr.mySubtreeMaxWeight != curr.getWeight()) {
+                curr = maxNode(curr.children.values(), reverseWeightComp);
+            }
+            */
+            
+            
+            return curr.myWord;
         }
 
         /**
@@ -436,6 +548,19 @@ public class Autocomplete {
             return null;
         }
         
+        public Node traverseDownToWord(String prefix) {
+            if (prefix == null)
+                throw new NullPointerException();
+            Character currentCharacter = null;
+            Node curr = this.myRoot;
+            for (int i = 0; i < prefix.length(); i++) {
+                currentCharacter = prefix.charAt(i);
+                currentCharacter = Character.toLowerCase(currentCharacter);
+                curr = curr.children.get(currentCharacter);
+            }
+            return curr;
+        }
+        
         /**
         * Return the largest from a pair of weights
         *
@@ -444,7 +569,7 @@ public class Autocomplete {
         * @return the larger of the two weights
         */
         private double maxWeight(double d1, double d2) {
-            if (d1 > d2)
+            if (d1 >= d2)
                 return d1;
                 
             return d2;
@@ -456,7 +581,20 @@ public class Autocomplete {
             Node currentNode = null;
             while (itr.hasNext()) {
                 currentNode = itr.next();
-                if (currentNode.compareTo(max) > 0) {
+                if (currentNode.mySubtreeMaxWeight > max.mySubtreeMaxWeight) {
+                    max = currentNode;
+                }
+            }
+            return max;
+        }
+        
+        public Node maxNode(Collection<Node> nodes, Comparator<Node> cmp) {
+            Iterator<Node> itr = nodes.iterator();
+            Node max = itr.next();
+            Node currentNode = null;
+            while(itr.hasNext()) {
+                currentNode = itr.next();
+                if (cmp.compare(currentNode, max) < 0) {
                     max = currentNode;
                 }
             }
@@ -480,6 +618,18 @@ public class Autocomplete {
             }
             return curr.isWord;
         }
+        
+	     public class ReverseWeightComparator implements Comparator<Node> {
+		      @Override
+		      public int compare(Node o1, Node o2) {
+			   if (o1.compareTo(o2) < 0) {
+				    return 1;
+			   } else if (o1.compareTo(o2) < 0) {
+				   return -1;
+			   }
+			    return 0;
+		      }
+	     }
         
         /**
         * Return mySubtreeMaxWeight at each node along a branch corresponding
@@ -591,6 +741,12 @@ public class Autocomplete {
                     result.add(""); // otherwise add the empty string
             }
             return result;
+        }
+        
+        public void printParentNode(String word) {
+                //if (children.parent != null) {
+                //    System.out.println("Parent Node: " + child.parent.toString());
+                //}
         }
     }
 }
