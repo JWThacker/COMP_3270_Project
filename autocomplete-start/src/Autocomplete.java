@@ -436,39 +436,51 @@ public class Autocomplete {
             
             // Declaration of all collections to be used
             PriorityQueue<Node> wordQueue = new PriorityQueue<>(k, new Node.ReverseSubtreeMaxWeightComparator());
-            TreeSet<Node> bagOfWords = new TreeSet<>(); // Holds words in each highly weighted branch
+            ArrayList<Node> bagOfWords = new ArrayList<>(); // Holds words in each highly weighted branch
             ArrayList<String> results = new ArrayList<>(); // Holds final list of strings
                         
             // Initialize collections/reference variables/Counting variables
-            wordQueue.addAll(curr.children.values());
+            wordQueue.add(curr);
             Node poppedNode = wordQueue.poll();
-            Node maxInWordQueue = wordQueue.peek();
-            Node compNode = new Node('a', null, 0);
+            Node maxInWordQueue = null;
+            boolean hasKWordsGreaterThan = false;
             int sizeOfBag = 0;
             
             /* While the popped node is not null and the number of words with weigthts
             *      greater than the max subtree weight of the largest node in the queue,
             *      add words to the bag
             */
-            while ((poppedNode != null) && (sizeOfBag < k)) {
+            do {
                 wordQueue.addAll(poppedNode.children.values());
-                if (poppedNode.isWord) 
-                    bagOfWords.add(poppedNode);
-                if (wordQueue.isEmpty())
-                    break;
                 maxInWordQueue = wordQueue.peek();
-                compNode.setWeight(maxInWordQueue.mySubtreeMaxWeight);
-                sizeOfBag = bagOfWords.tailSet(compNode, false).size();
+                if (poppedNode.isWord) {
+                    bagOfWords.add(poppedNode);
+                    bagOfWords.sort(null);
+                    hasKWordsGreaterThan = this.haveKWordsGreaterThan(bagOfWords, maxInWordQueue, k);
+                }
                 poppedNode = wordQueue.poll();   
-            }
+                maxInWordQueue = wordQueue.peek();
+            } while ((poppedNode != null) && (!wordQueue.isEmpty()) && (!hasKWordsGreaterThan));
+
             
-            Iterator<Node> itr = bagOfWords.descendingIterator();
-            while (itr.hasNext()) {
-                results.add(itr.next().myWord);
-                if (results.size() >= k)
-                    break;
+            int n = bagOfWords.size();
+            
+            if (hasKWordsGreaterThan) {
+                for (int i = n-1; i >= n-k; i--) {
+                    results.add(bagOfWords.get(i).myWord);
+                }
             }
-                        
+            else if (bagOfWords.size() >= k){
+                for (int i = n-1; i >= n-k; i--) {
+                    results.add(bagOfWords.get(i).myWord);
+                }
+            }
+            else {
+                for (int i = n-1; i >= 0; i--) {
+                    results.add(bagOfWords.get(i).myWord);
+                }
+            }
+                             
             return results;
         }
 
@@ -559,6 +571,30 @@ public class Autocomplete {
                 curr = curr.children.get(currentCharacter);
             }
             return curr;
+        }
+        
+        public boolean haveKWordsGreaterThan(ArrayList<Node> array, Node maxInQueue, int k) {
+            
+            if (array.size() < k)
+                return false;
+                
+            if (maxInQueue == null)
+                return false;
+            
+            boolean hasKWords = false;
+            int numElements = 0;
+            int n = array.size();
+            Node element = null;
+            
+            for (int i = n - 1; i >= n-k; i--) {
+                element = array.get(i);
+                if (element.getWeight() > maxInQueue.mySubtreeMaxWeight) {
+                    numElements++;
+                    if (numElements == k)
+                        return true;
+                }
+            }
+            return hasKWords;
         }
         
         /**

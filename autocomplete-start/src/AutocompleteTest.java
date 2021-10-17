@@ -535,10 +535,43 @@ public class AutocompleteTest {
        double[] myWeights = {3, 2, 5, 1, 4};
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
        
-       Iterable<String> topMatches = myTrie.topMatches("a", 2);
+       Iterable<String> topMatches = myTrie.topMatches("a", 3);
        for (String element : topMatches) {
            System.out.println(element);
        }
+    }
+    
+    @Test
+    public void testHaveKWords() {
+        ArrayList<Node> myNodes = new ArrayList<>();
+        
+        Node node1 = new Node('a', null, 0);
+             node1.setWeight(1);
+        
+        Node node2 = new Node('a', null, 0);
+             node2.setWeight(50);
+        
+        Node node3 = new Node('a', null, 0);
+             node3.setWeight(20);
+             
+        Node node4 = new Node('a', null, 0);
+             node4.setWeight(30);
+             
+       String[] myStrings = {"all", "bat", "apes" , "ape", "bay"};
+       double[] myWeights = {3, 2, 5, 1, 4};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+             
+        myNodes.add(node2);
+        myNodes.add(node3);
+        myNodes.add(node4);
+        myNodes.add(node1);
+        
+        myNodes.sort(null);
+    
+        Node testNode = new Node('a', null, 20);
+    
+        boolean actual = myTrie.haveKWordsGreaterThan(myNodes, testNode, 4);
+        System.out.println(actual);
     }
 
 }
