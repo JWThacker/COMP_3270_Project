@@ -357,13 +357,13 @@ public class Autocomplete {
             Node curr = this.myRoot;
             if (!this.contains(word)) {
                 for (int i = 0; i < word.length(); i++) {
-                    Character currentCharacter = word.charAt(i);
-                    if (!curr.children.containsKey(Character.toLowerCase(currentCharacter))) {
+                    Character currentCharacter = Character.toLowerCase(word.charAt(i));
+                    if (!curr.children.containsKey(currentCharacter)) {
                         curr.children.put(currentCharacter,
                                           new Node(Character.toLowerCase(currentCharacter),
                                           curr,
                                           weight));
-                        curr.mySubtreeMaxWeight = weight;
+                        curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
                     }
                     else {
                         curr.mySubtreeMaxWeight = this.maxWeight(weight, curr.mySubtreeMaxWeight);
@@ -441,46 +441,43 @@ public class Autocomplete {
                         
             // Initialize collections/reference variables/Counting variables
             wordQueue.add(curr);
-            Node poppedNode = wordQueue.poll();
+            Node poppedNode = null;
             Node maxInWordQueue = null;
             boolean hasKWordsGreaterThan = false;
-            int sizeOfBag = 0;
+            int numGreaterThan = 0;
             
             /* While the popped node is not null and the number of words with weigthts
             *      greater than the max subtree weight of the largest node in the queue,
             *      add words to the bag
             */
             do {
-                wordQueue.addAll(poppedNode.children.values());
-                maxInWordQueue = wordQueue.peek();
+                poppedNode = wordQueue.poll();
                 if (poppedNode.isWord) {
                     bagOfWords.add(poppedNode);
                     bagOfWords.sort(null);
-                    hasKWordsGreaterThan = this.haveKWordsGreaterThan(bagOfWords, maxInWordQueue, k);
                 }
-                poppedNode = wordQueue.poll();   
+                wordQueue.addAll(poppedNode.children.values());
                 maxInWordQueue = wordQueue.peek();
-            } while ((poppedNode != null) && (!wordQueue.isEmpty()) && (!hasKWordsGreaterThan));
-
+                if (maxInWordQueue == null) {
+                    numGreaterThan = numWordsGreater(bagOfWords, maxInWordQueue, k);
+                    break;
+                }
+                numGreaterThan = numWordsGreater(bagOfWords, maxInWordQueue, k);
+            } while((!wordQueue.isEmpty()) && (numGreaterThan < k));
             
             int n = bagOfWords.size();
             
-            if (hasKWordsGreaterThan) {
-                for (int i = n-1; i >= n-k; i--) {
-                    results.add(bagOfWords.get(i).myWord);
-                }
-            }
-            else if (bagOfWords.size() >= k){
-                for (int i = n-1; i >= n-k; i--) {
+            if (numGreaterThan < k) {
+                for (int i = n - 1; i >= 0; i--) {
                     results.add(bagOfWords.get(i).myWord);
                 }
             }
             else {
-                for (int i = n-1; i >= 0; i--) {
+                for (int i = n - 1; i >= n-k; i--) {
                     results.add(bagOfWords.get(i).myWord);
                 }
             }
-                             
+            
             return results;
         }
 
@@ -573,28 +570,24 @@ public class Autocomplete {
             return curr;
         }
         
-        public boolean haveKWordsGreaterThan(ArrayList<Node> array, Node maxInQueue, int k) {
-            
-            if (array.size() < k)
-                return false;
-                
+        public int numWordsGreater(ArrayList<Node> array, Node maxInQueue, int k) {
+                          
             if (maxInQueue == null)
-                return false;
-            
-            boolean hasKWords = false;
+                return array.size();
+                          
             int numElements = 0;
             int n = array.size();
+            int i = n - 1;
             Node element = null;
             
-            for (int i = n - 1; i >= n-k; i--) {
+            while ((numElements < k) && (i > -1)) {
                 element = array.get(i);
                 if (element.getWeight() > maxInQueue.mySubtreeMaxWeight) {
                     numElements++;
-                    if (numElements == k)
-                        return true;
                 }
+                i--;
             }
-            return hasKWords;
+            return numElements;
         }
         
         /**

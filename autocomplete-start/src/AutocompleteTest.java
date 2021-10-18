@@ -3,6 +3,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.io.*;
 
 public class AutocompleteTest {
    
@@ -535,7 +536,7 @@ public class AutocompleteTest {
        double[] myWeights = {3, 2, 5, 1, 4};
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
        
-       Iterable<String> topMatches = myTrie.topMatches("a", 3);
+       Iterable<String> topMatches = myTrie.topMatches("a", 1);
        for (String element : topMatches) {
            System.out.println(element);
        }
@@ -570,8 +571,44 @@ public class AutocompleteTest {
     
         Node testNode = new Node('a', null, 20);
     
-        boolean actual = myTrie.haveKWordsGreaterThan(myNodes, testNode, 4);
-        System.out.println(actual);
+        int actual = myTrie.numWordsGreater(myNodes, testNode, 1);
+        //System.out.println(actual);
+    }
+    
+    @Test
+    public void testWord333() throws Exception {
+        File file = new File("../dataForTest/words-333333.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String[] strings = new String [333333];
+        double[] weights = new double [333333];
+        double weight;
+        String string = null;
+        String[] st = new String[2];
+        
+        for (int i = 0; i < 333333; i++) {
+                st = br.readLine().trim().split("\t");
+                weight = Double.parseDouble(st[0]);
+                string = st[1];
+                strings[i] = string;
+                weights[i] = weight;
+                //System.out.println(weight);
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            //System.out.println(weights[i]);
+        }
+        
+        
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(strings, weights);
+       boolean cont = myTrie.contains("automobile");
+       Assert.assertTrue(cont);
+       Node automobile = myTrie.traverseDownToWord("auto");
+       System.out.println(automobile.myWeight);
+       System.out.println(automobile.mySubtreeMaxWeight);
+       Iterable<String> topMatches = myTrie.topMatches("auto", 10);
+       for (String element : topMatches) {
+           System.out.println(element);
+       }
     }
 
 }
