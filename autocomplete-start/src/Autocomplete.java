@@ -387,8 +387,8 @@ public class Autocomplete {
                 curr.myWeight = weight;
                 Collection<Node> nodes = curr.children.values();
                 Node max = null;
-                int nodeSize = nodes.size();
-                String myWord = word;
+                //int nodeSize = nodes.size();
+                //String myWord = word;
                 if (nodes.size() > 0) {
                    max = maxNode(nodes);
                    curr.mySubtreeMaxWeight = maxWeight(curr.myWeight, max.mySubtreeMaxWeight);
@@ -450,7 +450,7 @@ public class Autocomplete {
             wordQueue.add(curr);
             Node poppedNode = null;
             Node maxInWordQueue = null;
-            boolean hasKWordsGreaterThan = false;
+            //boolean hasKWordsGreaterThan = false;
             int numGreaterThan = 0;
             
             /* While the popped node is not null and the number of words with weigthts
