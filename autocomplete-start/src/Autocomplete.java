@@ -287,7 +287,10 @@ public class Autocomplete {
          */
         public double weightOf(String term) {
             // TODO complete weightOf
-            return 0.0;
+            int indexOfTerm = Arrays.binarySearch(myTerms, new Term(term, 0));
+            if (indexOfTerm < 0)
+                return 0.0;
+            return myTerms[indexOfTerm].getWeight();
         }
     }
     /**
@@ -514,12 +517,12 @@ public class Autocomplete {
             //}
             
             Comparator<Node> reverseWeightComp = new Node.ReverseSubtreeMaxWeightComparator();
-            ArrayList<Node> myNodes = new ArrayList<>();
-            PriorityQueue<Node> myNOdes = new PriorityQueue<>(reverseWeightComp);
+            //ArrayList<Node> myNodes = new ArrayList<>();
+            PriorityQueue<Node> myNodes = new PriorityQueue<>(reverseWeightComp);
             
             while (curr.mySubtreeMaxWeight != curr.getWeight()) {
-                myNOdes.addAll(curr.children.values());
-                curr = myNOdes.remove();
+                myNodes.addAll(curr.children.values());
+                curr = myNodes.remove();
             }
             
             /*
