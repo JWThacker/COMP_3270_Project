@@ -375,7 +375,6 @@ public class Autocomplete {
                     curr.myWeight = weight;
             }
             else {
-                
                 curr = this.traverseDownToWord(word);
                 //for (int i = 0; i < word.length(); i++) {
                 //    Character currentCharacter = word.charAt(i);
@@ -468,7 +467,8 @@ public class Autocomplete {
                     break;
                 }
                 numGreaterThan = numWordsGreater(bagOfWords, maxInWordQueue, k);
-            } while((!wordQueue.isEmpty()) && (numGreaterThan < k));
+            //} while((!wordQueue.isEmpty()) && (numGreaterThan < k));
+            } while(numGreaterThan < k);
             
             int n = bagOfWords.size();
             
