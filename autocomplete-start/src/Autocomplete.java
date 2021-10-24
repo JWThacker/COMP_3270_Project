@@ -375,10 +375,12 @@ public class Autocomplete {
                     curr.myWeight = weight;
             }
             else {
-                for (int i = 0; i < word.length(); i++) {
-                    Character currentCharacter = word.charAt(i);
-                    curr = curr.children.get(Character.toLowerCase(currentCharacter));
-                }
+                
+                curr = this.traverseDownToWord(word);
+                //for (int i = 0; i < word.length(); i++) {
+                //    Character currentCharacter = word.charAt(i);
+                //    curr = curr.children.get(Character.toLowerCase(currentCharacter));
+                //}
                 
                 curr.myWeight = weight;
                 Collection<Node> nodes = curr.children.values();
