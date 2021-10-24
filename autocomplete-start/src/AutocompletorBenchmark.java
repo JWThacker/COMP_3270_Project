@@ -104,7 +104,7 @@ public class AutocompletorBenchmark {
         String randomPrefix1 = randomWord.substring(0, 1);
         String randomPrefix2 = randomWord.substring(0, 2);
         String[] queries = { "", randomWord, randomPrefix1, randomPrefix2, "notarealword" };
-        for (int instanceNum = 0; instanceNum < 3; instanceNum++) {
+        for (int instanceNum = 0; instanceNum < 3; instanceNum++) { // BENCHMARK CLASSES HERE
             long startTime = System.nanoTime();
             Autocomplete.Autocompletor auto = instances[instanceNum];
             System.out.println("Benchmarking " + auto.getClass().getName() + "...");

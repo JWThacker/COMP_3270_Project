@@ -516,8 +516,8 @@ public class AutocompleteTest {
        double[] myWeights = {3, 2, 5, 1, 4};
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
        
-       String topMatch = myTrie.topMatch("a");
-       //System.out.println(topMatch);
+       String topMatch = myTrie.topMatch("b");
+       System.out.println("Top Match: " + topMatch);
     }
     
     @Test
@@ -609,6 +609,48 @@ public class AutocompleteTest {
        for (String element : topMatches) {
            System.out.println(element);
        }
+       
+       String topMatch = myTrie.topMatch("automob");
+       System.out.println("Top match: " + topMatch);
     }
 
+
+    @Test
+    public void testFourLetterWords() throws Exception {
+        File file = new File("../dataForTest/fourletterwords.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String[] strings = new String [456976];
+        double[] weights = new double [456976];
+        double weight;
+        String string = null;
+        String[] st = new String[2];
+        
+        for (int i = 0; i < 456976; i++) {
+                st = br.readLine().trim().split("\t");
+                weight = Double.parseDouble(st[0]);
+                string = st[1];
+                strings[i] = string;
+                weights[i] = weight;
+                //System.out.println(weight);
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            //System.out.println(weights[i]);
+        }
+        
+        
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(strings, weights);
+       boolean cont = myTrie.contains("zzzz");
+       Assert.assertTrue(cont);
+       Node automobile = myTrie.traverseDownToWord("zzzz");
+       System.out.println(automobile.myWeight);
+       System.out.println(automobile.mySubtreeMaxWeight);
+       Iterable<String> topMatches = myTrie.topMatches("z", 10);
+       for (String element : topMatches) {
+           System.out.println(element);
+       }
+       
+       String topMatch = myTrie.topMatch("ne");
+       System.out.println("Top match: " + topMatch);
+    }
 }

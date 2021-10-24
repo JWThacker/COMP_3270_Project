@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Iterator;
 import java.util.Collection;
-import java.util.TreeSet;
-import java.util.NavigableSet;
+//import java.util.TreeSet;
+//import java.util.NavigableSet;
 
 public class Autocomplete {
         /**
@@ -438,6 +438,9 @@ public class Autocomplete {
             PriorityQueue<Node> wordQueue = new PriorityQueue<>(k, new Node.ReverseSubtreeMaxWeightComparator());
             ArrayList<Node> bagOfWords = new ArrayList<>(); // Holds words in each highly weighted branch
             ArrayList<String> results = new ArrayList<>(); // Holds final list of strings
+            
+            if (curr == null)
+                return results;
                         
             // Initialize collections/reference variables/Counting variables
             wordQueue.add(curr);
@@ -499,11 +502,14 @@ public class Autocomplete {
             }
             
             Character currentCharacter = null;
-            Node curr = this.myRoot;
-            for (int i = 0; i < prefix.length(); i++) {
-                currentCharacter = Character.toLowerCase(prefix.charAt(i));
-                curr = curr.children.get(currentCharacter);
-            }
+            //Node curr = this.myRoot;
+            Node curr = traverseDownToWord(prefix);
+            if (curr == null)
+                return "";
+            //for (int i = 0; i < prefix.length(); i++) {
+            //    currentCharacter = Character.toLowerCase(prefix.charAt(i));
+            //    curr = curr.children.get(currentCharacter);
+            //}
             
             Comparator<Node> reverseWeightComp = new Node.ReverseSubtreeMaxWeightComparator();
             ArrayList<Node> myNodes = new ArrayList<>();
@@ -529,6 +535,7 @@ public class Autocomplete {
             */
             
             
+            
             return curr.myWord;
         }
 
@@ -538,7 +545,12 @@ public class Autocomplete {
          */
         public double weightOf(String term) {
             // TODO complete weightOf
-            return 0.0;
+            Node curr = this.traverseDownToWord(term);
+            if (curr == null)
+                return 0.0;
+            if (!curr.isWord)
+                return 0.0;
+            return curr.myWeight;
         }
 
         /**
@@ -565,6 +577,9 @@ public class Autocomplete {
             for (int i = 0; i < prefix.length(); i++) {
                 currentCharacter = prefix.charAt(i);
                 currentCharacter = Character.toLowerCase(currentCharacter);
+                if (!curr.children.containsKey(currentCharacter)) {
+                    return null;
+                }
                 curr = curr.children.get(currentCharacter);
             }
             return curr;
