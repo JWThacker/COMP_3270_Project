@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.HashMap;
+import java.io.FileWriter;
 
 import javax.swing.JFileChooser;
 
@@ -68,7 +69,7 @@ public class AutocompletorBenchmark {
         return result;
     }
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
         
         Scanner in = null;
         do {
@@ -145,10 +146,14 @@ public class AutocompletorBenchmark {
         System.out.printf("%-15s, %-15s, %-15s, %-15s", 
                 "prefix", "Brute", "Binary", "Trie\n");
         System.out.println("-------------------------------------------------------------------");
+        FileWriter myWriter = new FileWriter("Benchmark_out.txt");
+        myWriter.write("Prefix" + "\t" + "Brute" + "\t" + "Binary" + "\t" + "Trie\n");
         for (int instanceNum = 0; instanceNum < 3; instanceNum++) { 
             for (String query : results.keySet()) {
                 System.out.printf("%-15s,%15.5e, %15.5e, %15.5e\n", query, results.get(query)[0], results.get(query)[1], results.get(query)[2]);
+                myWriter.write(query + "\t" + results.get(query)[0] + "\t" + results.get(query)[1] + "\t" + results.get(query)[2] + "\n");
             }
         }
+        myWriter.close();
     }
 }

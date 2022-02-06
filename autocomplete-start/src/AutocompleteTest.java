@@ -517,7 +517,7 @@ public class AutocompleteTest {
        Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
        
        String topMatch = myTrie.topMatch("b");
-       System.out.println("Top Match: " + topMatch);
+       //System.out.println("Top Match: " + topMatch);
     }
     
     @Test
@@ -538,7 +538,7 @@ public class AutocompleteTest {
        
        Iterable<String> topMatches = myTrie.topMatches("a", 1);
        for (String element : topMatches) {
-           System.out.println(element);
+           //System.out.println(element);
        }
     }
     
@@ -603,15 +603,15 @@ public class AutocompleteTest {
        boolean cont = myTrie.contains("automobile");
        Assert.assertTrue(cont);
        Node automobile = myTrie.traverseDownToWord("auto");
-       System.out.println(automobile.myWeight);
-       System.out.println(automobile.mySubtreeMaxWeight);
+       //System.out.println(automobile.myWeight);
+       //System.out.println(automobile.mySubtreeMaxWeight);
        Iterable<String> topMatches = myTrie.topMatches("auto", 10);
        for (String element : topMatches) {
-           System.out.println(element);
+           //System.out.println(element);
        }
        
        String topMatch = myTrie.topMatch("automob");
-       System.out.println("Top match: " + topMatch);
+       //System.out.println("Top match: " + topMatch);
     }
 
 
@@ -643,14 +643,29 @@ public class AutocompleteTest {
        boolean cont = myTrie.contains("zzzz");
        Assert.assertTrue(cont);
        Node automobile = myTrie.traverseDownToWord("zzzz");
-       System.out.println(automobile.myWeight);
-       System.out.println(automobile.mySubtreeMaxWeight);
+       //System.out.println(automobile.myWeight);
+       //System.out.println(automobile.mySubtreeMaxWeight);
        Iterable<String> topMatches = myTrie.topMatches("z", 10);
        for (String element : topMatches) {
-           System.out.println(element);
+           //System.out.println(element);
        }
        
        String topMatch = myTrie.topMatch("ne");
-       System.out.println("Top match: " + topMatch);
+       //System.out.println("Top match: " + topMatch);
     }
+    
+   @Test public void testProblemDeliverableExample() {
+       String[] myStrings = {"ape", "app", "ban", "bat", "bee", "car", "cat"};
+       double[] myWeights = {6, 4, 2, 3, 5, 7, 1};
+       Autocomplete.TrieAutocomplete myTrie = new Autocomplete.TrieAutocomplete(myStrings, myWeights);
+       
+       Iterable<String> expected = myTrie.topMatches("d", 100);
+       
+       String expectedTopMatch = myTrie.topMatch("z");
+       System.out.println("top match: " + expectedTopMatch);
+       
+       for (String result : expected) {
+           System.out.println(result);
+       }
+   }
 }

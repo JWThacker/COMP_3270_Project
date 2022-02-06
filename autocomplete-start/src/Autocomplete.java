@@ -379,16 +379,10 @@ public class Autocomplete {
             }
             else {
                 curr = this.traverseDownToWord(word);
-                //for (int i = 0; i < word.length(); i++) {
-                //    Character currentCharacter = word.charAt(i);
-                //    curr = curr.children.get(Character.toLowerCase(currentCharacter));
-                //}
                 
                 curr.myWeight = weight;
                 Collection<Node> nodes = curr.children.values();
                 Node max = null;
-                //int nodeSize = nodes.size();
-                //String myWord = word;
                 if (nodes.size() > 0) {
                    max = maxNode(nodes);
                    curr.mySubtreeMaxWeight = maxWeight(curr.myWeight, max.mySubtreeMaxWeight);
@@ -431,7 +425,7 @@ public class Autocomplete {
             if (prefix == null)
                 throw new NullPointerException();
                 
-            if (k < 0)
+            if (k < 1)
                 throw new IllegalArgumentException();
                 
             // Traverse down to the prefix node
@@ -450,12 +444,11 @@ public class Autocomplete {
             wordQueue.add(curr);
             Node poppedNode = null;
             Node maxInWordQueue = null;
-            //boolean hasKWordsGreaterThan = false;
             int numGreaterThan = 0;
             
-            /* While the popped node is not null and the number of words with weigthts
-            *      greater than the max subtree weight of the largest node in the queue,
-            *      add words to the bag
+            /* While number of terms with weight greater than the largest mySubtreeMaxWeight
+            *      in wordQueue pop nodes out of wordQueue, add children to wordQueue, count
+            *      number of words with weight greater than the mySubtreeMaxWeight
             */
             do {
                 poppedNode = wordQueue.poll();
@@ -470,7 +463,6 @@ public class Autocomplete {
                     break;
                 }
                 numGreaterThan = numWordsGreater(bagOfWords, maxInWordQueue, k);
-            //} while((!wordQueue.isEmpty()) && (numGreaterThan < k));
             } while(numGreaterThan < k);
             
             int n = bagOfWords.size();
@@ -502,45 +494,21 @@ public class Autocomplete {
          */
         public String topMatch(String prefix) {
             // TODO: Implement topMatch
-            if (prefix == null) {
+            if (prefix == null)
                 throw new NullPointerException("Prefix cannot be null");
-            }
             
             Character currentCharacter = null;
-            //Node curr = this.myRoot;
-            Node curr = traverseDownToWord(prefix);
+            Node curr = this.traverseDownToWord(prefix);
             if (curr == null)
                 return "";
-            //for (int i = 0; i < prefix.length(); i++) {
-            //    currentCharacter = Character.toLowerCase(prefix.charAt(i));
-            //    curr = curr.children.get(currentCharacter);
-            //}
             
             Comparator<Node> reverseWeightComp = new Node.ReverseSubtreeMaxWeightComparator();
-            //ArrayList<Node> myNodes = new ArrayList<>();
             PriorityQueue<Node> myNodes = new PriorityQueue<>(reverseWeightComp);
             
             while (curr.mySubtreeMaxWeight != curr.getWeight()) {
                 myNodes.addAll(curr.children.values());
                 curr = myNodes.remove();
             }
-            
-            /*
-            while (curr.mySubtreeMaxWeight != curr.getWeight()) {
-                myNodes.addAll(0, curr.children.values());
-                myNodes.sort(reverseWeightComp);
-                curr = myNodes.get(0);
-            }
-            */
-            
-            /*
-            while (curr.mySubtreeMaxWeight != curr.getWeight()) {
-                curr = maxNode(curr.children.values(), reverseWeightComp);
-            }
-            */
-            
-            
-            
             return curr.myWord;
         }
 
@@ -590,6 +558,17 @@ public class Autocomplete {
             return curr;
         }
         
+        /**
+        * Returns the number of words in array that have weight greater than the 
+        * Node with the max mySubtreeMaxHeight
+        *
+        * @params array - an ArrayList of Nodes.
+        * @params maxInQueue - the Node in a Queue of Nodes that has the maximum
+        *                      mySubtreeMaxWeight.
+        * @params k - the maximum number of words to return.
+        * @return numElements - the number of Nodes that have weight greater than
+        *                       max mySubtreeMaxWeight in Queue of Words.
+        */
         public int numWordsGreater(ArrayList<Node> array, Node maxInQueue, int k) {
                           
             if (maxInQueue == null)
@@ -624,6 +603,14 @@ public class Autocomplete {
             return d2;
         }
         
+        /**
+        * Returns the Node in a Colletion that has the maximum 
+        *     mySubtreeMaxWeight
+        *
+        * @params nodes - a Collection of Nodes
+        *
+        * @return max - Node with the maximum mySubtreeMaxWeight
+        */
         public Node maxNode(Collection<Node> nodes) {
             Iterator<Node> itr = nodes.iterator();
             Node max = itr.next();
@@ -637,6 +624,14 @@ public class Autocomplete {
             return max;
         }
         
+        /**
+        * DISCLAIMER: I wrote, but never used this. This is an overloaded version
+        * of maxNode above except that it takes a Comparator<Node> as an argument
+        *
+        * @params nodes - a Collection of Nodes.
+        * @params cmp - a Comparator<Node>
+        * @return max - the maximum node based off the total ordering defined by cmp
+        */
         public Node maxNode(Collection<Node> nodes, Comparator<Node> cmp) {
             Iterator<Node> itr = nodes.iterator();
             Node max = itr.next();
@@ -668,6 +663,12 @@ public class Autocomplete {
             return curr.isWord;
         }
         
+        /**
+        * DISCLAIMER: I wrote, but never used this. This was supposed to be
+        *     a Comparator that I would use for the overloaded version of 
+        *     of maxNode above. I never actually finished the comparator before I
+        *     realized I didn't need it.
+        */
 	     public class ReverseWeightComparator implements Comparator<Node> {
 		      @Override
 		      public int compare(Node o1, Node o2) {
@@ -679,6 +680,11 @@ public class Autocomplete {
 			    return 0;
 		      }
 	     }
+        
+        //===================================================================
+        // The remaining methods were used to help me perform unit testing
+        // and don't contribute to the Autocomplete algorithm directly
+        //===================================================================
         
         /**
         * Return mySubtreeMaxWeight at each node along a branch corresponding

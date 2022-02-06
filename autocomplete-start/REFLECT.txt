@@ -1,6 +1,9 @@
-Name: firstname lastname
-AUID: abc123
-Hours Spent: Give an exact (decimal) number here
-Consulted With: provide names or AUID of any students, TAs, or professors you consulted with on the assignment. If you did not consult with anyone, you must explicitly write NONE.
-Resources Used: Any books, papers, or online resources. If you did not use any outside resources, you must explicitly write NONE 
-Impressions: Your answer here
+Name: Jared Thacker 
+AUID: jwt0024 
+Hours Spent: 35.0 hours 
+
+Consulted With: I helped Chase Hopkins with the graphing using ggplot2 in R. I have developed a little bit of expertise in this language over the years and prefer it for graphing over Excel.
+
+Resources Used: The class textbook. Wikipedia for looking up background info on this problem. The algorithms for Add(), topMatches() and topMatch() are written BY MYSELF using the strategies given to the class in the project description. I spent a very long on this project - I had fun.
+
+Impressions: What this class,and this project, has taught me is that it's very important to sit down and think about the problem before programming. Defining the problem and picking the algorithm is more important than the solution.
